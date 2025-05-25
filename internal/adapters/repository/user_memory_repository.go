@@ -21,7 +21,7 @@ func (r *InMemoryUserRepository) Create(user domain.User) error {
 	return nil
 }
 
-func (r *InMemoryUserRepository) GetById(id string) (domain.User, error) {
+func (r *InMemoryUserRepository) GetByID(id string) (domain.User, error) {
 	user, ok := r.users[id]
 	if !ok {
 		return domain.User{}, errors.New("user not found")
