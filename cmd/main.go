@@ -12,15 +12,15 @@ import (
 
 func main() {
 	repo := repository.NewInMemoryUserRepository()
-	service := service.NewUserService(repo)
+	userService := service.NewUserService(repo)
 
 	if len(os.Args) > 1 && os.Args[1] == "cli" {
-		cli.RunCli(service)
+		cli.RunCli(userService)
 		return
 	}
 
 	mux := http.NewServeMux()
-	http2.RegisterHandlers(mux, service)
+	http2.RegisterHandlers(mux, userService)
 
 	fmt.Println("Server is running on :8080")
 	http.ListenAndServe(":8080", mux)
