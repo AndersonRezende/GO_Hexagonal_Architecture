@@ -23,3 +23,9 @@ jobs:
 
       - name: Run tests
         run: go test -v ./... -v
+
+      - name: Test coverage
+        run: go test ./... -cover
+
+      - name: Lint code
+        run: go fmt ./... && go vet ./...
