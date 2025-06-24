@@ -35,7 +35,11 @@ func RunCli(service port.UserService) {
 }
 
 func listUsers(service port.UserService) {
-	users, _ := service.ListUsers()
+	users, err := service.ListUsers()
+	if err != nil {
+		err = fmt.Errorf("could not list users: %v", err)
+		return
+	}
 	for _, user := range users {
 		printUser(user)
 	}
