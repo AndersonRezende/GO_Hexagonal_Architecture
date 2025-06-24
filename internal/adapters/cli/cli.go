@@ -48,7 +48,8 @@ func listUsers(service port.UserService) {
 func getUser(service port.UserService) {
 	user, err := service.GetUser(os.Args[3])
 	if err != nil {
-		fmt.Errorf("user %q not found", os.Args[3])
+		errorMessage := fmt.Errorf("user %q not found", os.Args[3])
+		fmt.Println(errorMessage)
 		return
 	}
 	printUser(user)
@@ -57,7 +58,8 @@ func getUser(service port.UserService) {
 func createUser(service port.UserService) {
 	user, err := service.CreateUser(os.Args[3], os.Args[4])
 	if err != nil {
-		fmt.Errorf("could not create user %q - %q", os.Args[3], os.Args[4])
+		errorMessage := fmt.Errorf("could not create user %q - %q", os.Args[3], os.Args[4])
+		fmt.Println(errorMessage)
 	}
 	fmt.Println("User created successfully")
 	printUser(user)
@@ -66,7 +68,8 @@ func createUser(service port.UserService) {
 func updateUser(service port.UserService) {
 	err := service.UpdateUser(os.Args[3], os.Args[4], os.Args[5])
 	if err != nil {
-		fmt.Errorf("could not update user %q - %q - %q", os.Args[3], os.Args[4], os.Args[5])
+		errorMessage := fmt.Errorf("could not update user %q - %q - %q", os.Args[3], os.Args[4], os.Args[5])
+		fmt.Println(errorMessage)
 	}
 	fmt.Println("User updated successfully")
 	user := domain.User{ID: os.Args[3], Name: os.Args[4], Email: os.Args[5]}
@@ -76,7 +79,8 @@ func updateUser(service port.UserService) {
 func deleteUser(service port.UserService) {
 	err := service.DeleteUser(os.Args[3])
 	if err != nil {
-		fmt.Errorf("could not delete user %q", os.Args[3])
+		errorMessage := fmt.Errorf("could not delete user %q", os.Args[3])
+		fmt.Println(errorMessage)
 	}
 	fmt.Println("User deleted successfully")
 }

@@ -38,7 +38,8 @@ func getRepository() port.UserRepository {
 	} else {
 		db, err := sql.Open("sqlite3", "data.db")
 		if err != nil {
-			fmt.Errorf("could not open database: %v", err)
+			errorMessage := fmt.Errorf("could not open database: %v", err)
+			fmt.Println(errorMessage)
 		}
 		userRepository = sqlite.NewSqliteUserRepository(db)
 	}
