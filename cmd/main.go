@@ -20,7 +20,7 @@ func main() {
 	userService := service.NewUserService(userRepository)
 
 	if len(os.Args) > 1 && os.Args[1] == "cli" {
-		cli.RunCli(userService)
+		cli.RunCli(userService, cli.DefaultCLIFactory)
 		return
 	}
 

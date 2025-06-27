@@ -16,14 +16,16 @@ type CLI interface {
 	DeleteUser()
 }
 
-func RunCli(service port.UserService) {
-	var cli CLI
+type FactoryCLI func(service port.UserService) CLI
 
+func DefaultCLIFactory(service port.UserService) CLI {
 	if len(os.Args) == 2 {
-		cli = interactiveCli.NewInteractiveCLI(service)
-	} else {
-		cli = run_and_die.NewRunAndDieCLI(service)
+		return interactiveCli.NewInteractiveCLI(service)
 	}
+	return run_and_die.NewRunAndDieCLI(service)
+}
 
+func RunCli(service port.UserService, factory FactoryCLI) {
+	cli := factory(service)
 	cli.Run()
 }
