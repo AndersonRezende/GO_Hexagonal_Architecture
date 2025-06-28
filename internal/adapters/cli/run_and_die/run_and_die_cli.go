@@ -8,15 +8,15 @@ import (
 	"os"
 )
 
-type Interactive struct {
+type RunAndDie struct {
 	service port.UserService
 }
 
-func NewRunAndDieCLI(service port.UserService) *Interactive {
-	return &Interactive{service: service}
+func NewRunAndDieCLI(service port.UserService) *RunAndDie {
+	return &RunAndDie{service: service}
 }
 
-func (runAndDieCli *Interactive) Run() {
+func (runAndDieCli *RunAndDie) Run() {
 	if len(os.Args) == 2 {
 		util.PrintUsage()
 		return
@@ -39,7 +39,7 @@ func (runAndDieCli *Interactive) Run() {
 	}
 }
 
-func (runAndDieCli *Interactive) ListUsers() {
+func (runAndDieCli *RunAndDie) ListUsers() {
 	users, err := runAndDieCli.service.ListUsers()
 	if err != nil {
 		err = fmt.Errorf("could not list users: %v", err)
@@ -50,7 +50,7 @@ func (runAndDieCli *Interactive) ListUsers() {
 	}
 }
 
-func (runAndDieCli *Interactive) GetUser() {
+func (runAndDieCli *RunAndDie) GetUser() {
 	user, err := runAndDieCli.service.GetUser(os.Args[3])
 	if err != nil {
 		errorMessage := fmt.Errorf("user %q not found", os.Args[3])
@@ -60,7 +60,7 @@ func (runAndDieCli *Interactive) GetUser() {
 	util.PrintUser(user)
 }
 
-func (runAndDieCli *Interactive) CreateUser() {
+func (runAndDieCli *RunAndDie) CreateUser() {
 	user, err := runAndDieCli.service.CreateUser(os.Args[3], os.Args[4])
 	if err != nil {
 		errorMessage := fmt.Errorf("could not create user %q - %q", os.Args[3], os.Args[4])
@@ -70,7 +70,7 @@ func (runAndDieCli *Interactive) CreateUser() {
 	util.PrintUser(user)
 }
 
-func (runAndDieCli *Interactive) UpdateUser() {
+func (runAndDieCli *RunAndDie) UpdateUser() {
 	err := runAndDieCli.service.UpdateUser(os.Args[3], os.Args[4], os.Args[5])
 	if err != nil {
 		errorMessage := fmt.Errorf("could not update user %q - %q - %q", os.Args[3], os.Args[4], os.Args[5])
@@ -81,7 +81,7 @@ func (runAndDieCli *Interactive) UpdateUser() {
 	util.PrintUser(user)
 }
 
-func (runAndDieCli *Interactive) DeleteUser() {
+func (runAndDieCli *RunAndDie) DeleteUser() {
 	err := runAndDieCli.service.DeleteUser(os.Args[3])
 	if err != nil {
 		errorMessage := fmt.Errorf("could not delete user %q", os.Args[3])
