@@ -5,18 +5,22 @@ import (
 	"gohexarc/internal/adapters/repository/mock"
 	"gohexarc/internal/domain"
 	"gohexarc/internal/service"
+	"gohexarc/internal/tests"
 	"os"
 	"testing"
 )
 
-func TestInteractive_Run(t *testing.T) {
+func TestRunAndDie_Run(t *testing.T) {
 	repository := new(mock.UserRepository)
 	userService := service.NewUserService(repository)
 	runAndDieCli := NewRunAndDieCLI(userService)
 
 	t.Run("no command provided", func(t *testing.T) {
 		configureTestArgs([]string{})
-		output := execCliFunction(runAndDieCli.Run)
+		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 		expectedOutput := "Available cli commands:"
 		if !bytes.Contains([]byte(output), []byte(expectedOutput)) {
 			t.Errorf("unexpected output: %s, got: %s", expectedOutput, output)
@@ -31,7 +35,10 @@ func TestInteractive_Run(t *testing.T) {
 		}, nil)
 		configureTestArgs([]string{"get", "1"})
 
-		output := execCliFunction(runAndDieCli.Run)
+		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 
 		if !bytes.Contains([]byte(output), []byte("1")) ||
 			!bytes.Contains([]byte(output), []byte("John Doe")) ||
@@ -44,7 +51,10 @@ func TestInteractive_Run(t *testing.T) {
 		repository.On("Create", domain.User{Name: "John Doe", Email: "john.doe@example.com"}).Return(nil)
 		configureTestArgs([]string{"create", "John Doe", "john.doe@example.com"})
 
-		output := execCliFunction(runAndDieCli.Run)
+		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 
 		expectedOutput := "User created successfully"
 		if !bytes.Contains([]byte(output), []byte(expectedOutput)) {
@@ -56,7 +66,10 @@ func TestInteractive_Run(t *testing.T) {
 		repository.On("Update", domain.User{ID: "123", Name: "Jane Doe", Email: "john.doe@example.com"}).Return(nil)
 		configureTestArgs([]string{"update", "123", "Jane Doe", "john.doe@example.com"})
 
-		output := execCliFunction(runAndDieCli.Run)
+		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 
 		expectedOutput := "User updated successfully"
 		if !bytes.Contains([]byte(output), []byte(expectedOutput)) {
@@ -68,7 +81,10 @@ func TestInteractive_Run(t *testing.T) {
 		repository.On("Delete", "123").Return(nil)
 		configureTestArgs([]string{"delete", "123"})
 
-		output := execCliFunction(runAndDieCli.Run)
+		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 
 		expectedOutput := "User deleted successfully"
 		if !bytes.Contains([]byte(output), []byte(expectedOutput)) {
@@ -84,7 +100,10 @@ func TestInteractive_Run(t *testing.T) {
 
 		configureTestArgs([]string{"list"})
 
-		output := execCliFunction(runAndDieCli.Run)
+		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 		if !bytes.Contains([]byte(output), []byte("User ID: 1")) ||
 			!bytes.Contains([]byte(output), []byte("John Doe")) ||
 			!bytes.Contains([]byte(output), []byte("john.doe@example.com")) ||
@@ -97,7 +116,10 @@ func TestInteractive_Run(t *testing.T) {
 		t.Run("unknown command", func(t *testing.T) {
 			configureTestArgs([]string{"unknown_command"})
 
-			output := execCliFunction(runAndDieCli.Run)
+			output, err := tests.ExecCliFunction(runAndDieCli.Run)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
 
 			expectedOutput := "Unknown command: unknown_command"
 			if !bytes.Contains([]byte(output), []byte(expectedOutput)) {
@@ -112,21 +134,4 @@ func configureTestArgs(command []string) {
 	for _, arg := range command {
 		os.Args = append(os.Args, arg)
 	}
-}
-
-func execCliFunction(execFunc func()) string {
-	var buf bytes.Buffer
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-
-	execFunc()
-
-	w.Close()
-	os.Stdout = oldStdout
-	buf.ReadFrom(r)
-	r.Close()
-	output := buf.String()
-
-	return output
 }

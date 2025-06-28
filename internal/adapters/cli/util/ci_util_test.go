@@ -1,8 +1,8 @@
 package util
 
 import (
-	"bytes"
 	"gohexarc/internal/domain"
+	"gohexarc/internal/tests"
 	"os"
 	"strings"
 	"testing"
@@ -32,16 +32,11 @@ func TestReadInput(t *testing.T) {
 
 func TestPrintUser(t *testing.T) {
 	user := domain.User{ID: "1", Name: "John Doe", Email: "john.doe@example.com"}
-	var buf bytes.Buffer
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
 
-	PrintUser(user)
-	w.Close()
-	os.Stdout = oldStdout
-	buf.ReadFrom(r)
-	output := buf.String()
+	output, err := tests.ExecCliFunction(PrintUser, user)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
 	if !strings.Contains(output, "User ID: 1") ||
 		!strings.Contains(output, "John Doe") ||
