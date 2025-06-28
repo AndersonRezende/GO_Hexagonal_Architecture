@@ -34,6 +34,8 @@ func (runAndDieCli *Interactive) Run() {
 		runAndDieCli.UpdateUser()
 	case util.Delete:
 		runAndDieCli.DeleteUser()
+	default:
+		fmt.Printf("Unknown command: %s\n", command)
 	}
 }
 
