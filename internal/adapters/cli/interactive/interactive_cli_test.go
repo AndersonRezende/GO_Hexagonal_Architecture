@@ -1,4 +1,4 @@
-package interactiveCli
+package interactive
 
 import (
 	"bytes"
