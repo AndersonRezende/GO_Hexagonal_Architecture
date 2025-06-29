@@ -32,9 +32,8 @@ func PrintUser(w io.Writer, user domain.User) {
 	fmt.Fprintln(w, "----------------------")
 }
 
-func ReadInput(inputText string, r io.Reader, w io.Writer) string {
-	reader := bufio.NewReader(r)
+func ReadInput(inputText string, r *bufio.Reader, w io.Writer) string {
 	fmt.Fprint(w, "\n"+inputText)
-	input, _ := reader.ReadString('\n')
+	input, _ := r.ReadString('\n')
 	return strings.TrimSpace(input)
 }

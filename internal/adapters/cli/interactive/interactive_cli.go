@@ -1,6 +1,7 @@
 package interactiveCli
 
 import (
+	"bufio"
 	"fmt"
 	"gohexarc/internal/adapters/cli/util"
 	"gohexarc/internal/domain"
@@ -10,12 +11,12 @@ import (
 
 type Interactive struct {
 	service port.UserService
-	in      io.Reader
+	in      *bufio.Reader
 	out     io.Writer
 }
 
 func NewInteractiveCLI(service port.UserService, in io.Reader, out io.Writer) *Interactive {
-	return &Interactive{service: service, in: in, out: out}
+	return &Interactive{service: service, in: bufio.NewReader(in), out: out}
 }
 
 func (interactiveCli *Interactive) Run() {
@@ -99,5 +100,5 @@ func (interactiveCli *Interactive) DeleteUser() {
 		fmt.Printf("could not delete user %q\n", id)
 		return
 	}
-	fmt.Println("User deleted successfully")
+	fmt.Fprintln(interactiveCli.out, "User deleted successfully")
 }
