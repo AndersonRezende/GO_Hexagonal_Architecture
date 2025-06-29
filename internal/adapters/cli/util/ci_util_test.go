@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bufio"
 	"gohexarc/internal/domain"
 	"os"
 	"strings"
@@ -9,21 +10,10 @@ import (
 
 func TestReadInput(t *testing.T) {
 	input := "test input\n"
-	oldStdin := os.Stdin
-	r, w, _ := os.Pipe()
-	os.Stdin = r
-	defer func() {
-		os.Stdin = oldStdin
-		r.Close()
-		w.Close()
-	}()
+	reader := strings.NewReader(input)
+	bufReader := bufio.NewReader(reader)
 
-	go func() {
-		w.Write([]byte(input))
-		w.Close()
-	}()
-
-	result := ReadInput("Testing input: ", r, os.Stdout)
+	result := ReadInput("Testing input: ", bufReader, os.Stdout)
 
 	if result != "test input" {
 		t.Errorf("expected 'test input', returned '%s'", result)
