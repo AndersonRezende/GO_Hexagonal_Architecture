@@ -3,12 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/cli"
 	http2 "gohexarc/internal/adapters/http"
 	"gohexarc/internal/adapters/repository/memory"
 	"gohexarc/internal/adapters/repository/sqlite"
 	"gohexarc/internal/port"
-	"gohexarc/internal/service"
+	//"gohexarc/internal/service"
 	"net/http"
 	"os"
 
@@ -16,16 +17,15 @@ import (
 )
 
 func main() {
-	userRepository := getRepository()
-	userService := service.NewUserService(userRepository)
+	services := registry.NewServices()
 
 	if len(os.Args) > 1 && os.Args[1] == "cli" {
-		cli.RunCli(userService, cli.DefaultCLIFactory)
+		cli.RunCli(services, cli.DefaultCLIFactory)
 		return
 	}
 
 	mux := http.NewServeMux()
-	http2.RegisterHandlers(mux, userService)
+	http2.RegisterHandlers(mux, services.UserService)
 
 	fmt.Println("Server is running on :8080")
 	http.ListenAndServe(":8080", mux)

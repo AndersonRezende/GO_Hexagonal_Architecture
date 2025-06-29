@@ -1,9 +1,9 @@
 package cli
 
 import (
+	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/cli/interactive"
 	"gohexarc/internal/adapters/cli/run_and_die"
-	"gohexarc/internal/port"
 	"os"
 )
 
@@ -16,16 +16,16 @@ type CLI interface {
 	DeleteUser()
 }
 
-type FactoryCLI func(service port.UserService) CLI
+type FactoryCLI func(services *registry.Services) CLI
 
-func DefaultCLIFactory(service port.UserService) CLI {
+func DefaultCLIFactory(services *registry.Services) CLI {
 	if len(os.Args) == 2 {
-		return interactive.NewInteractiveCLI(service, os.Stdin, os.Stdout)
+		return interactive.NewInteractiveCLI(services.UserService, os.Stdin, os.Stdout)
 	}
-	return run_and_die.NewRunAndDieCLI(service, os.Stdout)
+	return run_and_die.NewRunAndDieCLI(services.UserService, os.Stdout)
 }
 
-func RunCli(service port.UserService, factory FactoryCLI) {
-	cli := factory(service)
+func RunCli(services *registry.Services, factory FactoryCLI) {
+	cli := factory(services)
 	cli.Run()
 }

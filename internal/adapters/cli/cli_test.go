@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"gohexarc/cmd/registry"
 	UserRepositoryMock "gohexarc/internal/adapters/repository/mock"
-	"gohexarc/internal/port"
 	UserService "gohexarc/internal/service"
 	"testing"
 )
@@ -33,12 +33,13 @@ func (m *mockCLI) DeleteUser() { m.deleteUserCalled = true }
 func TestRunCliCalls(t *testing.T) {
 	t.Run("Run is called", func(t *testing.T) {
 		cliMock := &mockCLI{}
-		factory := func(service port.UserService) CLI {
+		factory := func(services *registry.Services) CLI {
 			return cliMock
 		}
 		repository := new(UserRepositoryMock.UserRepository)
 		userService := UserService.NewUserService(repository)
-		RunCli(userService, factory)
+		services := registry.Services{UserService: userService}
+		RunCli(&services, factory)
 		if !cliMock.runCalled {
 			t.Errorf("RunCli did not call Run on the CLI")
 		}
@@ -46,12 +47,13 @@ func TestRunCliCalls(t *testing.T) {
 
 	t.Run("ListUsers is called", func(t *testing.T) {
 		cliMock := &mockCLI{}
-		factory := func(service port.UserService) CLI {
+		factory := func(services *registry.Services) CLI {
 			return cliMock
 		}
 		repository := new(UserRepositoryMock.UserRepository)
 		userService := UserService.NewUserService(repository)
-		RunCli(userService, factory)
+		services := registry.Services{UserService: userService}
+		RunCli(&services, factory)
 		if !cliMock.listUsersCalled {
 			t.Errorf("RunCli did not call ListUsers on the CLI")
 		}
@@ -59,12 +61,13 @@ func TestRunCliCalls(t *testing.T) {
 
 	t.Run("GetUser is called", func(t *testing.T) {
 		cliMock := &mockCLI{}
-		factory := func(service port.UserService) CLI {
+		factory := func(services *registry.Services) CLI {
 			return cliMock
 		}
 		repository := new(UserRepositoryMock.UserRepository)
 		userService := UserService.NewUserService(repository)
-		RunCli(userService, factory)
+		services := registry.Services{UserService: userService}
+		RunCli(&services, factory)
 		if !cliMock.getUserCalled {
 			t.Errorf("RunCli did not call GetUser on the CLI")
 		}
@@ -72,12 +75,13 @@ func TestRunCliCalls(t *testing.T) {
 
 	t.Run("CreateUser is called", func(t *testing.T) {
 		cliMock := &mockCLI{}
-		factory := func(service port.UserService) CLI {
+		factory := func(services *registry.Services) CLI {
 			return cliMock
 		}
 		repository := new(UserRepositoryMock.UserRepository)
 		userService := UserService.NewUserService(repository)
-		RunCli(userService, factory)
+		services := registry.Services{UserService: userService}
+		RunCli(&services, factory)
 		if !cliMock.createUserCalled {
 			t.Errorf("RunCli did not call CreateUser on the CLI")
 		}
@@ -85,12 +89,13 @@ func TestRunCliCalls(t *testing.T) {
 
 	t.Run("UpdateUser is called", func(t *testing.T) {
 		cliMock := &mockCLI{}
-		factory := func(service port.UserService) CLI {
+		factory := func(services *registry.Services) CLI {
 			return cliMock
 		}
 		repository := new(UserRepositoryMock.UserRepository)
 		userService := UserService.NewUserService(repository)
-		RunCli(userService, factory)
+		services := registry.Services{UserService: userService}
+		RunCli(&services, factory)
 		if !cliMock.updateUserCalled {
 			t.Errorf("RunCli did not call UpdateUser on the CLI")
 		}
@@ -98,12 +103,13 @@ func TestRunCliCalls(t *testing.T) {
 
 	t.Run("DeleteUser is called", func(t *testing.T) {
 		cliMock := &mockCLI{}
-		factory := func(service port.UserService) CLI {
+		factory := func(services *registry.Services) CLI {
 			return cliMock
 		}
 		repository := new(UserRepositoryMock.UserRepository)
 		userService := UserService.NewUserService(repository)
-		RunCli(userService, factory)
+		services := registry.Services{UserService: userService}
+		RunCli(&services, factory)
 		if !cliMock.deleteUserCalled {
 			t.Errorf("RunCli did not call DeleteUser on the CLI")
 		}
