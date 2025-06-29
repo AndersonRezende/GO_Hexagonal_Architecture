@@ -2,7 +2,6 @@ package util
 
 import (
 	"gohexarc/internal/domain"
-	"gohexarc/internal/tests"
 	"os"
 	"strings"
 	"testing"
@@ -24,7 +23,8 @@ func TestReadInput(t *testing.T) {
 		w.Close()
 	}()
 
-	result := ReadInput("Testing input: ")
+	result := ReadInput("Testing input: ", r, os.Stdout)
+
 	if result != "test input" {
 		t.Errorf("expected 'test input', returned '%s'", result)
 	}
@@ -33,10 +33,9 @@ func TestReadInput(t *testing.T) {
 func TestPrintUser(t *testing.T) {
 	user := domain.User{ID: "1", Name: "John Doe", Email: "john.doe@example.com"}
 
-	output, err := tests.ExecCliFunction(PrintUser, user)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	var sb strings.Builder
+	PrintUser(&sb, user)
+	output := sb.String()
 
 	if !strings.Contains(output, "User ID: 1") ||
 		!strings.Contains(output, "John Doe") ||

@@ -13,11 +13,15 @@ import (
 func TestRunAndDie_Run(t *testing.T) {
 	repository := new(mock.UserRepository)
 	userService := service.NewUserService(repository)
-	runAndDieCli := NewRunAndDieCLI(userService)
 
 	t.Run("no command provided", func(t *testing.T) {
 		configureTestArgs([]string{})
+		var buf bytes.Buffer
+		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		output += buf.String()
+
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -34,8 +38,12 @@ func TestRunAndDie_Run(t *testing.T) {
 			Email: "john.doe@example.com",
 		}, nil)
 		configureTestArgs([]string{"get", "1"})
+		var buf bytes.Buffer
+		runAndDieCli := NewRunAndDieCLI(userService, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		output += buf.String()
+
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -50,8 +58,11 @@ func TestRunAndDie_Run(t *testing.T) {
 	t.Run("create user", func(t *testing.T) {
 		repository.On("Create", domain.User{Name: "John Doe", Email: "john.doe@example.com"}).Return(nil)
 		configureTestArgs([]string{"create", "John Doe", "john.doe@example.com"})
+		var buf bytes.Buffer
+		runAndDieCli := NewRunAndDieCLI(userService, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		output += buf.String()
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -65,8 +76,11 @@ func TestRunAndDie_Run(t *testing.T) {
 	t.Run("update user", func(t *testing.T) {
 		repository.On("Update", domain.User{ID: "123", Name: "Jane Doe", Email: "john.doe@example.com"}).Return(nil)
 		configureTestArgs([]string{"update", "123", "Jane Doe", "john.doe@example.com"})
+		var buf bytes.Buffer
+		runAndDieCli := NewRunAndDieCLI(userService, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		output += buf.String()
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -80,8 +94,11 @@ func TestRunAndDie_Run(t *testing.T) {
 	t.Run("delete user", func(t *testing.T) {
 		repository.On("Delete", "123").Return(nil)
 		configureTestArgs([]string{"delete", "123"})
+		var buf bytes.Buffer
+		runAndDieCli := NewRunAndDieCLI(userService, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		output += buf.String()
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -97,10 +114,12 @@ func TestRunAndDie_Run(t *testing.T) {
 			{ID: "1", Name: "John Doe", Email: "john.doe@example.com"},
 			{ID: "2", Name: "Jane Doe", Email: "jane.doe@example.com"},
 		}, nil)
-
 		configureTestArgs([]string{"list"})
+		var buf bytes.Buffer
+		runAndDieCli := NewRunAndDieCLI(userService, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
+		output += buf.String()
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -115,8 +134,11 @@ func TestRunAndDie_Run(t *testing.T) {
 
 		t.Run("unknown command", func(t *testing.T) {
 			configureTestArgs([]string{"unknown_command"})
+			var buf bytes.Buffer
+			runAndDieCli := NewRunAndDieCLI(userService, &buf)
 
 			output, err := tests.ExecCliFunction(runAndDieCli.Run)
+			output += buf.String()
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}

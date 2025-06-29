@@ -5,20 +5,22 @@ import (
 	"gohexarc/internal/adapters/cli/util"
 	"gohexarc/internal/domain"
 	"gohexarc/internal/port"
+	"io"
 	"os"
 )
 
 type RunAndDie struct {
 	service port.UserService
+	out     io.Writer
 }
 
-func NewRunAndDieCLI(service port.UserService) *RunAndDie {
-	return &RunAndDie{service: service}
+func NewRunAndDieCLI(service port.UserService, out io.Writer) *RunAndDie {
+	return &RunAndDie{service: service, out: out}
 }
 
 func (runAndDieCli *RunAndDie) Run() {
 	if len(os.Args) == 2 {
-		util.PrintUsage()
+		util.PrintUsage(runAndDieCli.out)
 		return
 	}
 
@@ -46,7 +48,7 @@ func (runAndDieCli *RunAndDie) ListUsers() {
 		return
 	}
 	for _, user := range users {
-		util.PrintUser(user)
+		util.PrintUser(runAndDieCli.out, user)
 	}
 }
 
@@ -57,7 +59,7 @@ func (runAndDieCli *RunAndDie) GetUser() {
 		fmt.Println(errorMessage)
 		return
 	}
-	util.PrintUser(user)
+	util.PrintUser(runAndDieCli.out, user)
 }
 
 func (runAndDieCli *RunAndDie) CreateUser() {
@@ -67,7 +69,7 @@ func (runAndDieCli *RunAndDie) CreateUser() {
 		fmt.Println(errorMessage)
 	}
 	fmt.Println("User created successfully")
-	util.PrintUser(user)
+	util.PrintUser(runAndDieCli.out, user)
 }
 
 func (runAndDieCli *RunAndDie) UpdateUser() {
@@ -78,7 +80,7 @@ func (runAndDieCli *RunAndDie) UpdateUser() {
 	}
 	fmt.Println("User updated successfully")
 	user := domain.User{ID: os.Args[3], Name: os.Args[4], Email: os.Args[5]}
-	util.PrintUser(user)
+	util.PrintUser(runAndDieCli.out, user)
 }
 
 func (runAndDieCli *RunAndDie) DeleteUser() {

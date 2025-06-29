@@ -20,9 +20,9 @@ type FactoryCLI func(service port.UserService) CLI
 
 func DefaultCLIFactory(service port.UserService) CLI {
 	if len(os.Args) == 2 {
-		return interactiveCli.NewInteractiveCLI(service)
+		return interactiveCli.NewInteractiveCLI(service, os.Stdin, os.Stdout)
 	}
-	return run_and_die.NewRunAndDieCLI(service)
+	return run_and_die.NewRunAndDieCLI(service, os.Stdout)
 }
 
 func RunCli(service port.UserService, factory FactoryCLI) {

@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"gohexarc/internal/domain"
-	"os"
+	"io"
 	"strings"
 )
 
@@ -14,27 +14,27 @@ const Update string = "update"
 const Delete string = "delete"
 const Get string = "get"
 
-func PrintUsage() {
-	fmt.Println("\nAvailable cli commands:")
-	fmt.Println("list   - List users")
-	fmt.Println("create - Create user")
-	fmt.Println("update - Update user")
-	fmt.Println("delete - Delete user")
-	fmt.Println("get - Get user")
-	fmt.Println("exit - Exit the CLI")
+func PrintUsage(w io.Writer) {
+	fmt.Fprintln(w, "\nAvailable cli commands:")
+	fmt.Fprintln(w, "list   - List users")
+	fmt.Fprintln(w, "create - Create user")
+	fmt.Fprintln(w, "update - Update user")
+	fmt.Fprintln(w, "delete - Delete user")
+	fmt.Fprintln(w, "get - Get user")
+	fmt.Fprintln(w, "exit - Exit the CLI")
 }
 
-func PrintUser(user domain.User) {
-	fmt.Println("\n-----User Details-----")
-	fmt.Printf("User ID: %s\n", user.ID)
-	fmt.Printf("Name: %s\n", user.Name)
-	fmt.Printf("Email: %s\n", user.Email)
-	fmt.Println("----------------------")
+func PrintUser(w io.Writer, user domain.User) {
+	fmt.Fprintln(w, "\n-----User Details-----")
+	fmt.Fprintf(w, "User ID: %s\n", user.ID)
+	fmt.Fprintf(w, "Name: %s\n", user.Name)
+	fmt.Fprintf(w, "Email: %s\n", user.Email)
+	fmt.Fprintln(w, "----------------------")
 }
 
-func ReadInput(inputText string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("\n" + inputText)
+func ReadInput(inputText string, r io.Reader, w io.Writer) string {
+	reader := bufio.NewReader(r)
+	fmt.Fprint(w, "\n"+inputText)
 	input, _ := reader.ReadString('\n')
 	return strings.TrimSpace(input)
 }
