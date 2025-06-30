@@ -1,27 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/cli"
-	http2 "gohexarc/internal/adapters/http"
-	"net/http"
+	"gohexarc/internal/adapters/http"
 	"os"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 	services := registry.NewServices()
 
-	if len(os.Args) > 1 && os.Args[1] == "cli" {
+	if shouldExecuteCli() {
 		cli.RunCli(services, cli.DefaultCLIFactory)
 		return
 	}
+	http.ServeHTTP(services)
+}
 
-	mux := http.NewServeMux()
-	http2.RegisterHandlers(mux, services.UserService)
-
-	fmt.Println("Server is running on :8080")
-	http.ListenAndServe(":8080", mux)
+func shouldExecuteCli() bool {
+	if len(os.Args) > 1 {
+		return os.Args[1] == "cli"
+	}
+	return false
 }
