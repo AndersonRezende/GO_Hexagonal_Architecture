@@ -13,6 +13,12 @@ func ShouldUseInMemory() bool {
 
 func OpenDatabase() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "data.db")
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Println("Error closing database:", err)
+		}
+	}(db)
 	if err != nil {
 		errorMessage := fmt.Errorf("could not open database: %v", err)
 		fmt.Println(errorMessage)
