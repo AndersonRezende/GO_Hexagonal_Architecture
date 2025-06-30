@@ -3,20 +3,20 @@ package interactive
 import (
 	"bufio"
 	"fmt"
+	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/cli/util"
 	"gohexarc/internal/domain"
-	"gohexarc/internal/port"
 	"io"
 )
 
 type Interactive struct {
-	service port.UserService
-	in      *bufio.Reader
-	out     io.Writer
+	services *registry.Services
+	in       *bufio.Reader
+	out      io.Writer
 }
 
-func NewInteractiveCLI(service port.UserService, in io.Reader, out io.Writer) *Interactive {
-	return &Interactive{service: service, in: bufio.NewReader(in), out: out}
+func NewInteractiveCLI(services *registry.Services, in io.Reader, out io.Writer) *Interactive {
+	return &Interactive{services: services, in: bufio.NewReader(in), out: out}
 }
 
 func (interactiveCli *Interactive) Run() {
@@ -47,7 +47,7 @@ func (interactiveCli *Interactive) ExecuteCommand(command string) {
 }
 
 func (interactiveCli *Interactive) ListUsers() {
-	users, err := interactiveCli.service.ListUsers()
+	users, err := interactiveCli.services.UserService.ListUsers()
 	if err != nil {
 		fmt.Printf("could not list users: %v\n", err)
 		return
@@ -59,7 +59,7 @@ func (interactiveCli *Interactive) ListUsers() {
 
 func (interactiveCli *Interactive) GetUser() {
 	id := util.ReadInput("Enter user ID: ", interactiveCli.in, interactiveCli.out)
-	user, err := interactiveCli.service.GetUser(id)
+	user, err := interactiveCli.services.UserService.GetUser(id)
 	if err != nil {
 		fmt.Printf("user %q not found\n", id)
 		return
@@ -70,7 +70,7 @@ func (interactiveCli *Interactive) GetUser() {
 func (interactiveCli *Interactive) CreateUser() {
 	name := util.ReadInput("Enter name: ", interactiveCli.in, interactiveCli.out)
 	email := util.ReadInput("Enter email: ", interactiveCli.in, interactiveCli.out)
-	user, err := interactiveCli.service.CreateUser(name, email)
+	user, err := interactiveCli.services.UserService.CreateUser(name, email)
 	if err != nil {
 		fmt.Printf("could not create user %q - %q\n", name, email)
 		return
@@ -83,7 +83,7 @@ func (interactiveCli *Interactive) UpdateUser() {
 	id := util.ReadInput("Enter user ID: ", interactiveCli.in, interactiveCli.out)
 	name := util.ReadInput("Enter new name: ", interactiveCli.in, interactiveCli.out)
 	email := util.ReadInput("Enter new email: ", interactiveCli.in, interactiveCli.out)
-	err := interactiveCli.service.UpdateUser(id, name, email)
+	err := interactiveCli.services.UserService.UpdateUser(id, name, email)
 	if err != nil {
 		fmt.Printf("could not update user %q - %q - %q\n", id, name, email)
 		return
@@ -95,7 +95,7 @@ func (interactiveCli *Interactive) UpdateUser() {
 
 func (interactiveCli *Interactive) DeleteUser() {
 	id := util.ReadInput("Enter user ID: ", interactiveCli.in, interactiveCli.out)
-	err := interactiveCli.service.DeleteUser(id)
+	err := interactiveCli.services.UserService.DeleteUser(id)
 	if err != nil {
 		fmt.Printf("could not delete user %q\n", id)
 		return

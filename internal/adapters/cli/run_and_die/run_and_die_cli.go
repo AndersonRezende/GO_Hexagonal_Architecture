@@ -2,20 +2,20 @@ package run_and_die
 
 import (
 	"fmt"
+	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/cli/util"
 	"gohexarc/internal/domain"
-	"gohexarc/internal/port"
 	"io"
 	"os"
 )
 
 type RunAndDie struct {
-	service port.UserService
-	out     io.Writer
+	services *registry.Services
+	out      io.Writer
 }
 
-func NewRunAndDieCLI(service port.UserService, out io.Writer) *RunAndDie {
-	return &RunAndDie{service: service, out: out}
+func NewRunAndDieCLI(services *registry.Services, out io.Writer) *RunAndDie {
+	return &RunAndDie{services: services, out: out}
 }
 
 func (runAndDieCli *RunAndDie) Run() {
@@ -42,7 +42,7 @@ func (runAndDieCli *RunAndDie) Run() {
 }
 
 func (runAndDieCli *RunAndDie) ListUsers() {
-	users, err := runAndDieCli.service.ListUsers()
+	users, err := runAndDieCli.services.UserService.ListUsers()
 	if err != nil {
 		err = fmt.Errorf("could not list users: %v", err)
 		return
@@ -53,7 +53,7 @@ func (runAndDieCli *RunAndDie) ListUsers() {
 }
 
 func (runAndDieCli *RunAndDie) GetUser() {
-	user, err := runAndDieCli.service.GetUser(os.Args[3])
+	user, err := runAndDieCli.services.UserService.GetUser(os.Args[3])
 	if err != nil {
 		errorMessage := fmt.Errorf("user %q not found", os.Args[3])
 		fmt.Println(errorMessage)
@@ -63,7 +63,7 @@ func (runAndDieCli *RunAndDie) GetUser() {
 }
 
 func (runAndDieCli *RunAndDie) CreateUser() {
-	user, err := runAndDieCli.service.CreateUser(os.Args[3], os.Args[4])
+	user, err := runAndDieCli.services.UserService.CreateUser(os.Args[3], os.Args[4])
 	if err != nil {
 		errorMessage := fmt.Errorf("could not create user %q - %q", os.Args[3], os.Args[4])
 		fmt.Println(errorMessage)
@@ -73,7 +73,7 @@ func (runAndDieCli *RunAndDie) CreateUser() {
 }
 
 func (runAndDieCli *RunAndDie) UpdateUser() {
-	err := runAndDieCli.service.UpdateUser(os.Args[3], os.Args[4], os.Args[5])
+	err := runAndDieCli.services.UserService.UpdateUser(os.Args[3], os.Args[4], os.Args[5])
 	if err != nil {
 		errorMessage := fmt.Errorf("could not update user %q - %q - %q", os.Args[3], os.Args[4], os.Args[5])
 		fmt.Println(errorMessage)
@@ -84,7 +84,7 @@ func (runAndDieCli *RunAndDie) UpdateUser() {
 }
 
 func (runAndDieCli *RunAndDie) DeleteUser() {
-	err := runAndDieCli.service.DeleteUser(os.Args[3])
+	err := runAndDieCli.services.UserService.DeleteUser(os.Args[3])
 	if err != nil {
 		errorMessage := fmt.Errorf("could not delete user %q", os.Args[3])
 		fmt.Println(errorMessage)

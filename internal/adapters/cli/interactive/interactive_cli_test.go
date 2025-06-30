@@ -2,6 +2,7 @@ package interactive
 
 import (
 	"bytes"
+	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/repository/mock"
 	"gohexarc/internal/domain"
 	"gohexarc/internal/service"
@@ -11,6 +12,7 @@ import (
 func TestInteractive_Run(t *testing.T) {
 	repository := new(mock.UserRepository)
 	userService := service.NewUserService(repository)
+	services := registry.Services{UserService: userService}
 
 	t.Run("list users", func(t *testing.T) {
 		repository.On("List").Return([]domain.User{
@@ -20,7 +22,7 @@ func TestInteractive_Run(t *testing.T) {
 		input := bytes.NewBufferString("list\nexit")
 		var buf bytes.Buffer
 
-		interactiveCli := NewInteractiveCLI(userService, input, &buf)
+		interactiveCli := NewInteractiveCLI(&services, input, &buf)
 		interactiveCli.Run()
 
 		output := buf.String()
@@ -45,7 +47,7 @@ func TestInteractive_Run(t *testing.T) {
 		input := bytes.NewBufferString("get\n1\nexit")
 		var buf bytes.Buffer
 
-		interactiveCli := NewInteractiveCLI(userService, input, &buf)
+		interactiveCli := NewInteractiveCLI(&services, input, &buf)
 		interactiveCli.Run()
 		output := buf.String()
 
@@ -62,7 +64,7 @@ func TestInteractive_Run(t *testing.T) {
 		input := bytes.NewBufferString("create\nJohn Doe\njohn.doe@example.com\nexit")
 		var buf bytes.Buffer
 
-		interactiveCli := NewInteractiveCLI(userService, input, &buf)
+		interactiveCli := NewInteractiveCLI(&services, input, &buf)
 		interactiveCli.Run()
 		output := buf.String()
 
@@ -79,7 +81,7 @@ func TestInteractive_Run(t *testing.T) {
 		input := bytes.NewBufferString("update\n1\nJohn Updated\njohn.updated@example.com\nexit")
 		var buf bytes.Buffer
 
-		interactiveCli := NewInteractiveCLI(userService, input, &buf)
+		interactiveCli := NewInteractiveCLI(&services, input, &buf)
 		interactiveCli.Run()
 		output := buf.String()
 
@@ -96,7 +98,7 @@ func TestInteractive_Run(t *testing.T) {
 		input := bytes.NewBufferString("delete\n1\nexit")
 		var buf bytes.Buffer
 
-		interactiveCli := NewInteractiveCLI(userService, input, &buf)
+		interactiveCli := NewInteractiveCLI(&services, input, &buf)
 		interactiveCli.Run()
 		output := buf.String()
 

@@ -2,6 +2,7 @@ package run_and_die
 
 import (
 	"bytes"
+	"gohexarc/cmd/registry"
 	"gohexarc/internal/adapters/repository/mock"
 	"gohexarc/internal/domain"
 	"gohexarc/internal/service"
@@ -13,11 +14,12 @@ import (
 func TestRunAndDie_Run(t *testing.T) {
 	repository := new(mock.UserRepository)
 	userService := service.NewUserService(repository)
+	services := registry.Services{UserService: userService}
 
 	t.Run("no command provided", func(t *testing.T) {
 		configureTestArgs([]string{})
 		var buf bytes.Buffer
-		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+		runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
 		output += buf.String()
@@ -39,7 +41,7 @@ func TestRunAndDie_Run(t *testing.T) {
 		}, nil)
 		configureTestArgs([]string{"get", "1"})
 		var buf bytes.Buffer
-		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+		runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
 		output += buf.String()
@@ -59,7 +61,7 @@ func TestRunAndDie_Run(t *testing.T) {
 		repository.On("Create", domain.User{Name: "John Doe", Email: "john.doe@example.com"}).Return(nil)
 		configureTestArgs([]string{"create", "John Doe", "john.doe@example.com"})
 		var buf bytes.Buffer
-		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+		runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
 		output += buf.String()
@@ -77,7 +79,7 @@ func TestRunAndDie_Run(t *testing.T) {
 		repository.On("Update", domain.User{ID: "123", Name: "Jane Doe", Email: "john.doe@example.com"}).Return(nil)
 		configureTestArgs([]string{"update", "123", "Jane Doe", "john.doe@example.com"})
 		var buf bytes.Buffer
-		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+		runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
 		output += buf.String()
@@ -95,7 +97,7 @@ func TestRunAndDie_Run(t *testing.T) {
 		repository.On("Delete", "123").Return(nil)
 		configureTestArgs([]string{"delete", "123"})
 		var buf bytes.Buffer
-		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+		runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
 		output += buf.String()
@@ -116,7 +118,7 @@ func TestRunAndDie_Run(t *testing.T) {
 		}, nil)
 		configureTestArgs([]string{"list"})
 		var buf bytes.Buffer
-		runAndDieCli := NewRunAndDieCLI(userService, &buf)
+		runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 		output, err := tests.ExecCliFunction(runAndDieCli.Run)
 		output += buf.String()
@@ -135,7 +137,7 @@ func TestRunAndDie_Run(t *testing.T) {
 		t.Run("unknown command", func(t *testing.T) {
 			configureTestArgs([]string{"unknown_command"})
 			var buf bytes.Buffer
-			runAndDieCli := NewRunAndDieCLI(userService, &buf)
+			runAndDieCli := NewRunAndDieCLI(&services, &buf)
 
 			output, err := tests.ExecCliFunction(runAndDieCli.Run)
 			output += buf.String()
