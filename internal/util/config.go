@@ -13,7 +13,7 @@ func ShouldUseInMemory() bool {
 }
 
 func OpenDatabase() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "data.db")
+	db, err := sql.Open("sqlite3", "data/data.db")
 	if err != nil {
 		errorMessage := fmt.Errorf("could not open database: %v", err)
 		fmt.Println(errorMessage)
